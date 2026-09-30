@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 *.zip
 dist/
+
+# Internal working notes, kept locally only
+.claude/commit-rules.md
