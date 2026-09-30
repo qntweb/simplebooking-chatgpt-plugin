@@ -139,5 +139,9 @@ simplebooking/
 ```
 
 `simplebooking/skills/` is generated from the skills repository with
-`scripts/build-client-plugin.py --plugin-dir <this repo>/simplebooking`, never edited
+`scripts/build-client-plugin.py --target chatgpt --plugin-dir <this repo>/simplebooking`, never edited
 here. `agents/openai.yaml` lives with each skill's source, so the build carries it.
+
+## License
+
+[PolyForm Shield 1.0.0](LICENSE) — © 2025-2026 QNT S.r.l. — Zucchetti Group.

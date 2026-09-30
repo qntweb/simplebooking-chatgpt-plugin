@@ -9,7 +9,7 @@
   },
   "homepage": "https://github.com/qntweb/simplebooking-chatgpt-plugin",
   "repository": "https://github.com/qntweb/simplebooking-chatgpt-plugin",
-  "license": "Proprietary",
+  "license": "LicenseRef-PolyForm-Shield-1.0.0",
   "keywords": ["hotel", "reservations", "revenue management", "booking engine", "simplebooking"],
   "extensions": {
     "com.openai": {
