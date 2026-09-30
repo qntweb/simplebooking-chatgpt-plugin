@@ -1,0 +1,20 @@
+{
+  "name": "simplebooking-chatgpt-plugin",
+  "interface": {
+    "displayName": "Simple Booking"
+  },
+  "plugins": [
+    {
+      "name": "simplebooking",
+      "source": {
+        "source": "local",
+        "path": "./simplebooking"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

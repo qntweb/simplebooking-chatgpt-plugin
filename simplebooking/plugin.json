@@ -1,0 +1,35 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "simplebooking",
+  "version": "0.6.2",
+  "description": "SimpleBooking data analysis skills (reservations, revenue, content, demand) for hotel customers, built on the IBE and BackOffice MCP connectors.",
+  "author": {
+    "name": "Simple Booking - QNT / Zucchetti Group",
+    "url": "https://www.simplebooking.travel"
+  },
+  "homepage": "https://github.com/qntweb/simplebooking-chatgpt-plugin",
+  "repository": "https://github.com/qntweb/simplebooking-chatgpt-plugin",
+  "license": "Proprietary",
+  "keywords": ["hotel", "reservations", "revenue management", "booking engine", "simplebooking"],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Simple Booking",
+        "shortDescription": "Reservations, revenue, content and demand analysis for SimpleBooking hotels",
+        "longDescription": "Four skills on your SimpleBooking data: reservation insights (pick-up, pace, channel mix, commissions, cancellations, markets), a demand-driven revenue diagnostic (area demand, availability, MinLOS, direct vs OTA parity), a content and translation audit, and demand capture (is the property converting the demand of its destination). Sign in with your SimpleBooking account to connect the IBE and BackOffice servers.",
+        "developerName": "Simple Booking - QNT / Zucchetti Group",
+        "category": "Productivity",
+        "capabilities": ["Read"],
+        "websiteURL": "https://www.simplebooking.travel",
+        "defaultPrompt": [
+          "How is next month going compared to last year?",
+          "Where am I losing money in the next 60 days?",
+          "Audit the content and translations of my hotel."
+        ],
+        "brandColor": "#F2C812",
+        "composerIcon": "./assets/icon.svg",
+        "logo": "./assets/logo.svg"
+      }
+    }
+  }
+}

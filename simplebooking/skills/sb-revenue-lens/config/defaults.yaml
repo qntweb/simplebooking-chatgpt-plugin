@@ -1,0 +1,138 @@
+# sb-revenue-lens — defaults & thresholds
+# Thresholds are RELATIVE to the period/hotel (not absolute), so they hold up
+# across different destinations (urban and coastal alike).
+
+# ---------------------------------------------------------------------------
+# Area demand radius (km) for the demand report
+# ---------------------------------------------------------------------------
+radius_km:
+  urban_default: 12        # cities (Rome, Florence, Milan)
+  coastal_resort: 20       # seaside resorts
+  rural_default: 25        # countryside / lakes
+  note: >
+    Area demand is about the DESTINATION, not the property: two nearby hotels
+    within the same radius get near-identical numbers. Use it for timing and
+    the shape of the curve, NOT as "my demand".
+
+# ---------------------------------------------------------------------------
+# Default guest allocation for price queries
+# ---------------------------------------------------------------------------
+default_room_allocations:
+  - adults: 2
+    children: []
+
+# ---------------------------------------------------------------------------
+# Detector thresholds (all relative)
+# ---------------------------------------------------------------------------
+thresholds:
+
+  # Weekly demand classification: tercile over the period's weeks.
+  demand_week:
+    method: tercile          # high = top tercile, low = bottom tercile
+    # no absolute values: computed over the returned set of weeks.
+
+  # Room scarcity (note: "Available N" is per category+rate, NOT
+  # house inventory — don't cry sold-out).
+  scarcity:
+    tight_max_available: 2        # max rooms available across ALL categories <= 2 => "tight"
+    room_type_coverage_low: 0.34  # bookable categories / total categories < 34% => thin offer
+
+  # "Flat" price despite scarcity (L1): nightly price vs the period median
+  # for the same hotel/category. Needs at least 1 "soft" date as a baseline.
+  flat_price:
+    premium_expected_min: 0.10    # with scarcity, expect >= +10% over the median
+    # if tight AND price <= median*(1+premium_expected_min) => flag a leak
+
+  # Unsold risk (L2)
+  unsold_risk:
+    wide_open_room_types_min: 0.66  # >= 66% of categories still bookable
+    price_low_quartile: 0.25        # price in the period's bottom quartile
+    # combined with: low demand (bottom tercile) AND inside/beyond booking window
+
+  # Booking window (L2/L5): "inside the window" if days_left < average lead time
+  booking_window:
+    inside_if_days_left_lt_avg_daysahead: true
+
+  # Restrictions vs LOS (L3)
+  los_mismatch:
+    short_stay_nights_max: 3        # "short stay" = 1..3 nights
+    short_stay_share_flag: 0.40     # if short-stay searches / total >= 40% AND MinLOS cuts them off => flag
+    # MinLOS that "cuts off": MinLOS > short_stay_nights_max on those dates
+
+  # OTA parity (L4)
+  ota_parity:
+    only_if_rate_match: true        # skip if rate match isn't active
+
+# ---------------------------------------------------------------------------
+# Targeted pass: max number of dates to query (cost control)
+# ---------------------------------------------------------------------------
+sampling:
+  max_priced_dates_chat: 6      # chat mode
+  max_priced_dates_report: 14   # report mode
+  always_include:
+    - weekend_in_period
+    - sold_out_edges          # nights adjacent to sold-out (for orphan night)
+    - one_soft_midweek        # baseline for the "flat" price check
+    - unserved_nights         # Tier 2 only: nights where guests searched and
+                              # found nothing (R2). Ignored when Tier 2 is off.
+
+# ---------------------------------------------------------------------------
+# Known-hotel mapping (name -> SB Property ID). If absent: ask for the
+# Property ID, or resolve it with booking_engine_get_accessible_properties.
+# ---------------------------------------------------------------------------
+known_hotels: {}
+
+# ---------------------------------------------------------------------------
+# Output
+# ---------------------------------------------------------------------------
+output:
+  default_mode: chat            # chat | report
+  brand: SimpleBooking
+  always_show_evidence_table: true
+  always_show_limits_block: true
+
+# ---------------------------------------------------------------------------
+# Tier 2 — first-party demand (OPTIONAL, Back Office MCP)
+# ---------------------------------------------------------------------------
+# Searches performed on THIS property's own booking engine, via
+# `run_property_demand_aggregation`. It sharpens L1a/L1b/L1c, L2, L5, L6, adds
+# the L3b measurement and the whole of L3c — and gates NONE of them. Every lens
+# is fully defined at Tier 1; if this tier is unavailable, skip every R2 clause
+# and run unchanged.
+#
+# Grammar and the mechanical guardrails: references/property-demand.md.
+property_demand:
+
+  # `auto` = probe once at the start of a run. On a missing tool or an
+  # authorization failure, proceed silently at Tier 1 and state the degradation
+  # ONCE in the limits block. Never estimate what this tier would have said.
+  # An external reseller without Back Office access lands here by default, and
+  # gets exactly the skill as it was before this tier existed.
+  enabled: auto
+
+  # Bot and scraping protection was rolled out through 2024 and the series
+  # falls by roughly a factor of three across that year — a ramp, not a step,
+  # so there is no clean earlier anchor. NOTHING crosses this date: not a
+  # series, not a baseline, not a "vs last year".
+  history_floor: "2025-01-01"
+
+  # ---- R2, per-night pressure --------------------------------------------
+  # Below this many searches covering a night, the average solutions figure is
+  # computed on a handful of events and swings wildly: the night is not
+  # eligible for `unserved_night` at all.
+  min_searches_night: 10
+
+  # A night whose searches found on average this many solutions or fewer counts
+  # as unserved — guests asked and there was effectively nothing to give them.
+  unserved_solutions_max: 0.25
+
+  # ---- L3c, occupancy mismatch -------------------------------------------
+  # Share of denied searches concentrated on a single NumberOfPersons value.
+  # Above this, with the calendar showing rooms for other compositions on those
+  # dates, it is the room occupancy setup and not capacity.
+  denied_pax_concentration: 0.60
+
+  # ---- L5, lead time ------------------------------------------------------
+  # `property` = my own searchers' DaysInAdvance; `area` = the Tier-1 fallback
+  # on area daysAhead. Always say which one the answer used.
+  lead_time_source: property

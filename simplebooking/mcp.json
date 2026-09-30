@@ -1,0 +1,13 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "simplebooking-backoffice": {
+      "type": "streamable-http",
+      "url": "https://mcp.backoffice.simplebooking.it"
+    },
+    "simplebooking-ibe": {
+      "type": "streamable-http",
+      "url": "https://mcp.ibe.simplebooking.it"
+    }
+  }
+}
