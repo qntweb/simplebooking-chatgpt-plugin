@@ -1,5 +1,5 @@
 # ChatGPT / Codex presentation of this skill (Agent Plugins, OpenAI extension).
-# Ignored by Claude. Shipped to the client plugins by scripts/build-client-plugin.py.
+# Ignored by Claude. Shipped to the ChatGPT plugin only (build-client-plugin.py --target chatgpt).
 interface:
   display_name: "Reservation insights"
   short_description: "Pick-up, pace, channel mix, cancellations and markets from the Back Office"

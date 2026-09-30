@@ -1,5 +1,5 @@
 # ChatGPT / Codex presentation of this skill (Agent Plugins, OpenAI extension).
-# Ignored by Claude. Shipped to the client plugins by scripts/build-client-plugin.py.
+# Ignored by Claude. Shipped to the ChatGPT plugin only (build-client-plugin.py --target chatgpt).
 interface:
   display_name: "Demand capture"
   short_description: "Is the property capturing its destination's demand, and where does it lose it"
